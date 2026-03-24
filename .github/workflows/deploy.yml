@@ -1,0 +1,68 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["E2E Tests"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Only deploy when E2E tests passed
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── SSH setup ─────────────────────────────────────────────────────────
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      # ── File sync ─────────────────────────────────────────────────────────
+      # rsync over SSH — equivalent to SFTP but handles deletions and only
+      # transfers changed files, making re-deploys fast.
+      - name: Sync source to VM
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='tests/' \
+            --exclude='src/frontend/node_modules/' \
+            --exclude='src/frontend/dist/' \
+            --exclude='src/backend/**/bin/' \
+            --exclude='src/backend/**/obj/' \
+            --exclude='src/backend/**/*.db' \
+            --exclude='src/backend/**/*.db-shm' \
+            --exclude='src/backend/**/*.db-wal' \
+            ./ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/
+
+      # ── Docker Compose ────────────────────────────────────────────────────
+      - name: Deploy with Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          PORT: ${{ secrets.DEPLOY_PORT || '80' }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: JWT_KEY,PORT
+          script: |
+            set -e
+            cd "${{ secrets.DEPLOY_PATH }}"
+
+            echo "Building and starting services..."
+            docker compose -f cicd/docker/docker-compose.yml up --build -d
+
+            echo "Removing unused images..."
+            docker image prune -f
+
+            echo "Running containers:"
+            docker compose -f cicd/docker/docker-compose.yml ps
