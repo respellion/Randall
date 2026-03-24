@@ -58,8 +58,14 @@ jobs:
             set -e
             cd "${{ secrets.DEPLOY_PATH }}"
 
-            echo "Building and starting services..."
-            docker compose -f cicd/docker/docker-compose.yml up --build -d
+            echo "Building backend..."
+            DOCKER_BUILDKIT=0 docker compose -f cicd/docker/docker-compose.yml build backend
+
+            echo "Building frontend..."
+            DOCKER_BUILDKIT=0 docker compose -f cicd/docker/docker-compose.yml build frontend
+
+            echo "Starting services..."
+            docker compose -f cicd/docker/docker-compose.yml up -d
 
             echo "Removing unused images..."
             docker image prune -f
