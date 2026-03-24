@@ -1,0 +1,16 @@
+# Not needed for frontend build
+src/backend/
+
+# Build artifacts and dependencies
+src/frontend/node_modules/
+src/frontend/dist/
+
+# Secrets — never bake these into an image
+src/frontend/.env
+src/frontend/.env.*
+
+# IDE and git
+.git/
+.vs/
+**/*.user
+**/.idea/

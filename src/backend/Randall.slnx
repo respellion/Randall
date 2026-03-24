@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Randall.Api/Randall.Api.csproj" />
+    <Project Path="src/Randall.Application/Randall.Application.csproj" />
+    <Project Path="src/Randall.Domain/Randall.Domain.csproj" />
+    <Project Path="src/Randall.Infrastructure/Randall.Infrastructure.csproj" />
+  </Folder>
+</Solution>

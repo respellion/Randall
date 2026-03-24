@@ -1,0 +1,18 @@
+# Not needed for backend build
+src/frontend/
+cicd/
+
+# Build artifacts
+src/backend/**/bin/
+src/backend/**/obj/
+
+# Local database files
+src/backend/**/*.db
+src/backend/**/*.db-shm
+src/backend/**/*.db-wal
+
+# IDE and git
+.git/
+.vs/
+**/*.user
+**/.idea/

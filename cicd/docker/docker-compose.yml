@@ -1,0 +1,34 @@
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: cicd/docker/Dockerfile.backend
+    environment:
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/randall.db
+      - Jwt__Key=${JWT_KEY:-randall-super-secret-jwt-key-change-in-production-32chars}
+      - Jwt__Issuer=${JWT_ISSUER:-randall-api}
+      - Jwt__Audience=${JWT_AUDIENCE:-randall-app}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
+    volumes:
+      - db-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ../..
+      dockerfile: cicd/docker/Dockerfile.frontend
+    ports:
+      - "${PORT:-80}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db-data:

@@ -1,0 +1,54 @@
+# -------------------------
+# .NET
+# -------------------------
+src/backend/**/bin/
+src/backend/**/obj/
+src/backend/**/*.user
+src/backend/**/.vs/
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# -------------------------
+# Node / Frontend
+# -------------------------
+src/frontend/node_modules/
+src/frontend/dist/
+src/frontend/.env
+src/frontend/.env.*
+
+# -------------------------
+# Docker
+# -------------------------
+cicd/docker/.env
+
+# -------------------------
+# IDEs
+# -------------------------
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+
+# -------------------------
+# OS
+# -------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# Playwright
+# -------------------------
+tests/e2e/node_modules/
+tests/e2e/playwright-report/
+tests/e2e/test-results/
+tests/e2e/.cache/
+
+# -------------------------
+# Logs
+# -------------------------
+*.log
+logs/
