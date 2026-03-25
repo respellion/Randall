@@ -156,11 +156,8 @@ jobs:
             set -e
             cd "${{ secrets.DEPLOY_PATH }}"
 
-            echo "Building backend..."
-            DOCKER_BUILDKIT=0 docker compose -f cicd/docker/docker-compose.yml build backend
-
-            echo "Building frontend..."
-            DOCKER_BUILDKIT=0 docker compose -f cicd/docker/docker-compose.yml build frontend
+            echo "Building images..."
+            docker compose -f cicd/docker/docker-compose.yml build
 
             echo "Starting services..."
             docker compose -f cicd/docker/docker-compose.yml up -d
