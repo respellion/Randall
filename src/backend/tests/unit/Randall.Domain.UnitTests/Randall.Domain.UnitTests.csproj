@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Randall.Domain\Randall.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\Randall.Domain\Randall.Domain.csproj" />
   </ItemGroup>
 
 </Project>
