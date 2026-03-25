@@ -7,6 +7,6 @@
   </Folder>
   <Folder Name="/tests/" />
   <Folder Name="/tests/unit/">
-    <Project Path="tests/unit/Randall.Domain.UnitTests.csproj" />
+    <Project Path="tests/unit/Randall.Domain.UnitTests/Randall.Domain.UnitTests.csproj" />
   </Folder>
 </Solution>
