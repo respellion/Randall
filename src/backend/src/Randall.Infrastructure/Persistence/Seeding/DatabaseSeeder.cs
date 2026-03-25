@@ -22,24 +22,16 @@ public static class DatabaseSeeder
     {
         await context.Database.MigrateAsync();
 
-        // Seed workplaces
-        var existing = await context.Workplaces.ToListAsync();
-        var expectedSet = ExpectedWorkplaces.Select(w => w.Name + w.Location).ToHashSet();
-        var existingSet = existing.Select(w => w.Name + w.Location).ToHashSet();
-
-        if (!expectedSet.SetEquals(existingSet))
+        // Seed workplaces only if none exist yet
+        if (!await context.Workplaces.AnyAsync())
         {
-            context.Workplaces.RemoveRange(existing);
-            await context.SaveChangesAsync();
-
             var workplaces = ExpectedWorkplaces.Select(w => new Workplace(w.Name, w.Location));
             context.Workplaces.AddRange(workplaces);
             await context.SaveChangesAsync();
         }
 
-        // Seed admin user
-        var adminExists = await context.Users.AnyAsync(u => u.Email == AdminEmail);
-        if (!adminExists)
+        // Seed admin user only if no users exist yet
+        if (!await context.Users.AnyAsync())
         {
             var hash = passwordHasher.Hash(AdminPassword);
             var admin = User.Create(AdminEmail, "Admin", hash, isAdmin: true).Value!;
