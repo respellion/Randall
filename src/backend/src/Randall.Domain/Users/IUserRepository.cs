@@ -7,6 +7,7 @@ public interface IUserRepository
     Task<bool> ExistsByEmailAsync(string email, CancellationToken ct = default);
     Task<List<User>> GetPendingAsync(CancellationToken ct = default);
     Task<List<User>> GetAllAsync(CancellationToken ct = default);
+    Task<int> CountAdminsAsync(CancellationToken ct = default);
     Task<List<User>> GetAllNonAdminAsync(CancellationToken ct = default);
     Task AddAsync(User user, CancellationToken ct = default);
     void Delete(User user);

@@ -11,8 +11,15 @@ public class DeleteUserHandler(IUserRepository userRepository)
         if (user is null)
             return Result.Failure("User not found.");
 
+        if (user.Id == command.RequesterId)
+            return Result.Failure("You cannot delete your own account.");
+
         if (user.IsAdmin)
-            return Result.Failure("Admin users cannot be deleted.");
+        {
+            var adminCount = await userRepository.CountAdminsAsync(ct);
+            if (adminCount <= 1)
+                return Result.Failure("Cannot delete the last admin account.");
+        }
 
         userRepository.Delete(user);
         await userRepository.SaveChangesAsync(ct);

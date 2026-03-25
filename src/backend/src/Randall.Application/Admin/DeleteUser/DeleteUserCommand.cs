@@ -1,3 +1,3 @@
 namespace Randall.Application.Admin.DeleteUser;
 
-public record DeleteUserCommand(Guid UserId);
+public record DeleteUserCommand(Guid RequesterId, Guid UserId);

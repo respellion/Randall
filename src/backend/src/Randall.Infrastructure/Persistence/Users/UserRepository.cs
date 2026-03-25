@@ -20,6 +20,9 @@ public class UserRepository(AppDbContext context) : IUserRepository
     public Task<List<User>> GetAllAsync(CancellationToken ct = default) =>
         context.Users.OrderBy(u => u.Name).ToListAsync(ct);
 
+    public Task<int> CountAdminsAsync(CancellationToken ct = default) =>
+        context.Users.CountAsync(u => u.IsAdmin);
+
     public Task<List<User>> GetAllNonAdminAsync(CancellationToken ct = default) =>
         context.Users.Where(u => !u.IsAdmin).OrderBy(u => u.Name).ToListAsync(ct);
 

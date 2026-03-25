@@ -19,8 +19,9 @@ public class AdminController(
     DeleteUserHandler deleteUserHandler,
     MakeAdminHandler makeAdminHandler) : ControllerBase
 {
-    private bool IsAdmin =>
-        User.FindFirstValue("isAdmin") == "true";
+    private bool IsAdmin => User.FindFirstValue("isAdmin") == "true";
+    private Guid RequesterId => Guid.Parse(User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier)
+        ?? User.FindFirstValue("sub")!);
 
     [HttpGet("users")]
     public async Task<IActionResult> GetAllUsers(CancellationToken ct)
@@ -62,7 +63,7 @@ public class AdminController(
     public async Task<IActionResult> DeleteUser(Guid id, CancellationToken ct)
     {
         if (!IsAdmin) return Forbid();
-        var result = await deleteUserHandler.HandleAsync(new DeleteUserCommand(id), ct);
+        var result = await deleteUserHandler.HandleAsync(new DeleteUserCommand(RequesterId, id), ct);
         if (!result.IsSuccess)
             return BadRequest(new ProblemDetails { Detail = result.Error });
         return NoContent();
