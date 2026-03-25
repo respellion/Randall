@@ -22,13 +22,30 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Run unit tests
-        run: dotnet test src/backend/tests/unit/Randall.Domain.UnitTests.csproj --logger "console;verbosity=normal"
+        run: dotnet test src/backend/tests/unit/Randall.Domain.UnitTests/Randall.Domain.UnitTests.csproj --logger "console;verbosity=normal"
+
+  # ── Integration Tests ──────────────────────────────────────────────────────
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run integration tests
+        run: dotnet test src/backend/tests/integration/Randall.Api.IntegrationTests/Randall.Api.IntegrationTests.csproj --logger "console;verbosity=normal"
 
   # ── E2E Tests ──────────────────────────────────────────────────────────────
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
-    needs: unit-tests
+    needs: [unit-tests, integration-tests]
 
     steps:
       - name: Checkout

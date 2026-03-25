@@ -9,4 +9,7 @@
   <Folder Name="/tests/unit/">
     <Project Path="tests/unit/Randall.Domain.UnitTests/Randall.Domain.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/tests/integration/">
+    <Project Path="tests/integration/Randall.Api.IntegrationTests/Randall.Api.IntegrationTests.csproj" />
+  </Folder>
 </Solution>
