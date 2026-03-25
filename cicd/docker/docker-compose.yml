@@ -13,7 +13,7 @@ services:
       - db-data:/app/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/8080'"]
       interval: 10s
       timeout: 5s
       retries: 5
