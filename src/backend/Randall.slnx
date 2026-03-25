@@ -5,4 +5,8 @@
     <Project Path="src/Randall.Domain/Randall.Domain.csproj" />
     <Project Path="src/Randall.Infrastructure/Randall.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/unit/">
+    <Project Path="tests/unit/Randall.Domain.UnitTests.csproj" />
+  </Folder>
 </Solution>
