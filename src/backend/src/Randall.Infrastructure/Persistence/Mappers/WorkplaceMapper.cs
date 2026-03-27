@@ -6,7 +6,7 @@ namespace Randall.Infrastructure.Persistence.Mappers;
 public static class WorkplaceMapper
 {
     public static Workplace ToDomain(WorkplaceRecord record) =>
-        Workplace.Reconstitute(
+        WorkplaceFactory.Reconstitute(
             record.Id,
             record.Name,
             record.Location,

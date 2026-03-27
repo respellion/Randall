@@ -6,7 +6,7 @@ namespace Randall.Infrastructure.Persistence.Mappers;
 public static class UserMapper
 {
     public static User ToDomain(UserRecord record) =>
-        User.Reconstitute(
+        UserFactory.Reconstitute(
             record.Id,
             record.Email,
             record.Name,

@@ -10,10 +10,7 @@ public class User : Entity
     public bool IsApproved { get; private set; }
     public bool IsAdmin { get; private set; }
 
-    public static User Reconstitute(Guid id, string email, string name, string passwordHash, bool isApproved, bool isAdmin) =>
-        new(id, email, name, passwordHash, isApproved, isAdmin);
-
-    private User(Guid id, string email, string name, string passwordHash, bool isApproved, bool isAdmin) : base(id)
+    internal User(Guid id, string email, string name, string passwordHash, bool isApproved, bool isAdmin) : base(id)
     {
         Email = email;
         Name = name;

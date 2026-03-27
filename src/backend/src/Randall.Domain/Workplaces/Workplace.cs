@@ -8,10 +8,7 @@ public class Workplace : Entity
     public string Location { get; private set; }
     public bool IsActive { get; private set; }
 
-    public static Workplace Reconstitute(Guid id, string name, string location, bool isActive) =>
-        new(id, name, location, isActive);
-
-    private Workplace(Guid id, string name, string location, bool isActive) : base(id)
+    internal Workplace(Guid id, string name, string location, bool isActive) : base(id)
     {
         Name = name;
         Location = location;
