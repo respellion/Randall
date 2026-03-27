@@ -1,5 +1,6 @@
 services:
   backend:
+    image: randall/backend:latest
     build:
       context: ../..
       dockerfile: cicd/docker/Dockerfile.backend
@@ -20,6 +21,7 @@ services:
       start_period: 10s
 
   frontend:
+    image: randall/frontend:latest
     build:
       context: ../..
       dockerfile: cicd/docker/Dockerfile.frontend

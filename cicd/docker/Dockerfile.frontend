@@ -4,7 +4,8 @@ WORKDIR /app
 
 # Install dependencies — copy lockfiles first to cache the npm layer
 COPY src/frontend/package.json src/frontend/package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,id=npm,target=/root/.npm \
+    npm ci --prefer-offline
 
 # Copy source
 COPY src/frontend/index.html ./

@@ -8,12 +8,14 @@ COPY src/backend/src/Randall.Domain/Randall.Domain.csproj                      s
 COPY src/backend/src/Randall.Application/Randall.Application.csproj            src/backend/src/Randall.Application/
 COPY src/backend/src/Randall.Infrastructure/Randall.Infrastructure.csproj      src/backend/src/Randall.Infrastructure/
 COPY src/backend/src/Randall.Api/Randall.Api.csproj                            src/backend/src/Randall.Api/
-RUN dotnet restore "src/backend/src/Randall.Api/Randall.Api.csproj"
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet restore "src/backend/src/Randall.Api/Randall.Api.csproj"
 
 # Build — copy source only (no bin/obj/db files)
 COPY src/backend/src/ src/backend/src/
-RUN dotnet publish "src/backend/src/Randall.Api/Randall.Api.csproj" \
-    -c Release -o /app/publish
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet publish "src/backend/src/Randall.Api/Randall.Api.csproj" \
+    -c Release --no-restore -o /app/publish
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
