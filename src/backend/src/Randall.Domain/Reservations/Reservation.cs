@@ -13,12 +13,7 @@ public class Reservation : Entity
     public ReservationStatus Status { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    public static Reservation Reconstitute(
-        Guid id, Guid workplaceId, string employeeEmail, string employeeName,
-        DateOnly date, ReservationStatus status, DateTime createdAt) =>
-        new(id, workplaceId, employeeEmail, employeeName, date, status, createdAt);
-
-    private Reservation(
+    internal Reservation(
         Guid id, Guid workplaceId, string employeeEmail, string employeeName,
         DateOnly date, ReservationStatus status, DateTime createdAt) : base(id)
     {

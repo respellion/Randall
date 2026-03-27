@@ -6,7 +6,7 @@ namespace Randall.Infrastructure.Persistence.Mappers;
 public static class ReservationMapper
 {
     public static Reservation ToDomain(ReservationRecord record) =>
-        Reservation.Reconstitute(
+        ReservationFactory.Reconstitute(
             record.Id,
             record.WorkplaceId,
             record.EmployeeEmail,
