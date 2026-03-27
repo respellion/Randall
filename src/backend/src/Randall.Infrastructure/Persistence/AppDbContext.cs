@@ -1,28 +1,28 @@
 using Microsoft.EntityFrameworkCore;
-using Randall.Domain.Reservations;
-using Randall.Domain.Users;
-using Randall.Domain.Workplaces;
+using Randall.Infrastructure.Persistence.Records;
 
 namespace Randall.Infrastructure.Persistence;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public DbSet<Workplace> Workplaces => Set<Workplace>();
-    public DbSet<Reservation> Reservations => Set<Reservation>();
-    public DbSet<User> Users => Set<User>();
+    public DbSet<WorkplaceRecord> Workplaces => Set<WorkplaceRecord>();
+    public DbSet<ReservationRecord> Reservations => Set<ReservationRecord>();
+    public DbSet<UserRecord> Users => Set<UserRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Workplace>(entity =>
+        modelBuilder.Entity<WorkplaceRecord>(entity =>
         {
+            entity.ToTable("Workplaces");
             entity.HasKey(w => w.Id);
             entity.Property(w => w.Name).IsRequired().HasMaxLength(100);
             entity.Property(w => w.Location).IsRequired().HasMaxLength(200);
             entity.Property(w => w.IsActive).IsRequired();
         });
 
-        modelBuilder.Entity<Reservation>(entity =>
+        modelBuilder.Entity<ReservationRecord>(entity =>
         {
+            entity.ToTable("Reservations");
             entity.HasKey(r => r.Id);
             entity.Property(r => r.WorkplaceId).IsRequired();
             entity.Property(r => r.EmployeeEmail).IsRequired().HasMaxLength(200);
@@ -35,8 +35,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasIndex(r => new { r.EmployeeEmail, r.Date });
         });
 
-        modelBuilder.Entity<User>(entity =>
+        modelBuilder.Entity<UserRecord>(entity =>
         {
+            entity.ToTable("Users");
             entity.HasKey(u => u.Id);
             entity.Property(u => u.Email).IsRequired().HasMaxLength(200);
             entity.Property(u => u.Name).IsRequired().HasMaxLength(200);

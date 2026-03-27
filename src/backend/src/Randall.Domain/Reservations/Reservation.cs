@@ -13,11 +13,21 @@ public class Reservation : Entity
     public ReservationStatus Status { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    // EF Core constructor
-    private Reservation() : base()
+    public static Reservation Reconstitute(
+        Guid id, Guid workplaceId, string employeeEmail, string employeeName,
+        DateOnly date, ReservationStatus status, DateTime createdAt) =>
+        new(id, workplaceId, employeeEmail, employeeName, date, status, createdAt);
+
+    private Reservation(
+        Guid id, Guid workplaceId, string employeeEmail, string employeeName,
+        DateOnly date, ReservationStatus status, DateTime createdAt) : base(id)
     {
-        EmployeeEmail = string.Empty;
-        EmployeeName = string.Empty;
+        WorkplaceId = workplaceId;
+        EmployeeEmail = employeeEmail;
+        EmployeeName = employeeName;
+        Date = date;
+        Status = status;
+        CreatedAt = createdAt;
     }
 
     private Reservation(Guid workplaceId, string employeeEmail, string employeeName, DateOnly date)

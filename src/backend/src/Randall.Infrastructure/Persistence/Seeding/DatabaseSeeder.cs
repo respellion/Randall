@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Randall.Application.Common;
 using Randall.Domain.Users;
 using Randall.Domain.Workplaces;
+using Randall.Infrastructure.Persistence.Mappers;
 
 namespace Randall.Infrastructure.Persistence.Seeding;
 
@@ -25,7 +26,7 @@ public static class DatabaseSeeder
         // Seed workplaces only if none exist yet
         if (!await context.Workplaces.AnyAsync())
         {
-            var workplaces = ExpectedWorkplaces.Select(w => new Workplace(w.Name, w.Location));
+            var workplaces = ExpectedWorkplaces.Select(w => WorkplaceMapper.ToRecord(new Workplace(w.Name, w.Location)));
             context.Workplaces.AddRange(workplaces);
             await context.SaveChangesAsync();
         }
@@ -35,7 +36,7 @@ public static class DatabaseSeeder
         {
             var hash = passwordHasher.Hash(AdminPassword);
             var admin = User.Create(AdminEmail, "Admin", hash, isAdmin: true).Value!;
-            context.Users.Add(admin);
+            context.Users.Add(UserMapper.ToRecord(admin));
             await context.SaveChangesAsync();
         }
     }

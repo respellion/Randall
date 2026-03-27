@@ -8,10 +8,14 @@ public class Workplace : Entity
     public string Location { get; private set; }
     public bool IsActive { get; private set; }
 
-    private Workplace() : base()
+    public static Workplace Reconstitute(Guid id, string name, string location, bool isActive) =>
+        new(id, name, location, isActive);
+
+    private Workplace(Guid id, string name, string location, bool isActive) : base(id)
     {
-        Name = string.Empty;
-        Location = string.Empty;
+        Name = name;
+        Location = location;
+        IsActive = isActive;
     }
 
     public Workplace(string name, string location) : base()
