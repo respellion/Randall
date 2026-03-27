@@ -52,3 +52,10 @@ tests/e2e/.cache/
 # -------------------------
 *.log
 logs/
+
+# -------------------------
+# Claude
+# -------------------------
+.claude/settings.local.json
+.claude/cache/
+.claude/sessions/
