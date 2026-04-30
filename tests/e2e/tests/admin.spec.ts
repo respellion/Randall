@@ -6,41 +6,43 @@ test.describe('Admin portal', () => {
     await loginAsAdmin(page);
   });
 
-  test('admin user sees the Admin portal button in the header', async ({ page }) => {
-    await expect(page.getByRole('button', { name: 'Admin portal' })).toBeVisible();
+  test('admin user sees the Admin button in the header', async ({ page }) => {
+    await expect(page.getByRole('button', { name: 'Admin' })).toBeVisible();
   });
 
   test('navigates to the admin portal', async ({ page }) => {
-    await page.getByRole('button', { name: 'Admin portal' }).click();
+    await page.getByRole('button', { name: 'Admin' }).click();
     await page.waitForURL('/admin');
 
-    await expect(page.getByRole('heading', { name: 'Admin Portal' })).toBeVisible();
-    await expect(page.getByText('Manage user accounts')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Who can book/i })).toBeVisible();
+    await expect(page.getByText(/Users.*The Hague HQ/i)).toBeVisible();
   });
 
-  test('admin portal lists the admin account under Approved accounts', async ({ page }) => {
-    await page.goto('/admin');
+  test('admin portal lists the admin account', async ({ page }) => {
+    await page.getByRole('button', { name: 'Admin' }).click();
+    await page.waitForURL('/admin');
 
-    await expect(page.getByText('Approved accounts')).toBeVisible();
-    // Target the name paragraph inside the admin's list item
-    const adminRow = page.locator('li').filter({ hasText: 'admin@randall.local' });
-    await expect(adminRow.getByRole('paragraph').filter({ hasText: /^Admin$/ })).toBeVisible();
+    await expect(page.getByText('admin@randall.local')).toBeVisible();
+    const adminRow = page.locator('[data-testid="user-row"]').filter({ hasText: 'admin@randall.local' });
+    await expect(adminRow.locator('[data-testid="role-badge"]').filter({ hasText: /^admin$/i })).toBeVisible();
   });
 
-  test('admin account has the Admin badge and no Make admin button', async ({ page }) => {
-    await page.goto('/admin');
+  test('admin account has the admin role badge and no make-admin button', async ({ page }) => {
+    await page.getByRole('button', { name: 'Admin' }).click();
+    await page.waitForURL('/admin');
 
-    const adminRow = page.locator('li').filter({ hasText: 'admin@randall.local' });
-    // The badge is a <span> with class bg-amber-100
-    await expect(adminRow.locator('span').filter({ hasText: /^Admin$/ })).toBeVisible();
-    await expect(adminRow.getByRole('button', { name: 'Make admin' })).not.toBeVisible();
+    const adminRow = page.locator('[data-testid="user-row"]').filter({ hasText: 'admin@randall.local' });
+    await expect(adminRow.locator('[data-testid="role-badge"]').filter({ hasText: /^admin$/i })).toBeVisible();
+    // The make-admin action button is not rendered for users who are already admin
+    await expect(adminRow.getByRole('button', { name: 'Admin' })).not.toBeVisible();
   });
 
-  test('Back to planner link returns to the planner', async ({ page }) => {
-    await page.goto('/admin');
-    await page.getByRole('button', { name: '← Back to planner' }).click();
+  test('wordmark navigates back to the planner', async ({ page }) => {
+    await page.getByRole('button', { name: 'Admin' }).click();
+    await page.waitForURL('/admin');
+    await page.locator('span', { hasText: 'randall' }).first().click();
 
     await page.waitForURL('/');
-    await expect(page.getByText('Reserve your workspace up to 2 weeks ahead')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Where to sit/i })).toBeVisible();
   });
 });

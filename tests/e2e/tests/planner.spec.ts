@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin, offsetDate } from './helpers';
+import { loginAsAdmin, offsetDate, selectDate } from './helpers';
 
 test.describe('Planner', () => {
   test.beforeEach(async ({ page }) => {
@@ -8,20 +8,24 @@ test.describe('Planner', () => {
 
   test('displays both pods with 8 desks each', async ({ page }) => {
     // Wait for floor plan to load — at least one free desk must be visible
-    await expect(page.getByRole('button', { name: 'D1 Free' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^D1 free$/i })).toBeVisible();
 
     // All 16 desk buttons contain a desk label (D1–D16) in their text content
-    const allDesks = page.getByRole('button').filter({ hasText: /D\d+/ });
+    const allDesks = page.getByRole('button').filter({ hasText: /^D\d+/ });
     await expect(allDesks).toHaveCount(16);
   });
 
-  test('date picker is constrained to today and 14 days ahead', async ({ page }) => {
-    const input = page.locator('input[type="date"]');
-    const today = offsetDate(0);
-    const max = offsetDate(14);
+  test('date strip shows 14 days and respects boundaries', async ({ page }) => {
+    // 14 day-strip cells are rendered (one per bookable day)
+    await expect(page.locator('[data-date]')).toHaveCount(14);
 
-    await expect(input).toHaveAttribute('min', today);
-    await expect(input).toHaveAttribute('max', max);
+    // Today and the last bookable day are both present
+    await expect(page.locator(`[data-date="${offsetDate(0)}"]`)).toBeVisible();
+    await expect(page.locator(`[data-date="${offsetDate(13)}"]`)).toBeVisible();
+
+    // Clicking the last day disables the forward arrow
+    await page.locator(`[data-date="${offsetDate(13)}"]`).click();
+    await expect(page.getByRole('button', { name: '→' })).toBeDisabled();
   });
 
   test('previous-day button is disabled when on today', async ({ page }) => {
@@ -29,72 +33,60 @@ test.describe('Planner', () => {
   });
 
   test('next-day button is disabled when on the maximum date', async ({ page }) => {
-    const input = page.locator('input[type="date"]');
-    await input.fill(offsetDate(14));
-    await input.dispatchEvent('change');
+    await page.locator(`[data-date="${offsetDate(13)}"]`).click();
 
     await expect(page.getByRole('button', { name: '→' })).toBeDisabled();
   });
 
-  test('reserves a desk and shows it as Mine', async ({ page }) => {
-    const targetDate = offsetDate(7);
-    const input = page.locator('input[type="date"]');
-    await input.fill(targetDate);
-    await input.dispatchEvent('change');
+  test('reserves a desk and shows it as yours', async ({ page }) => {
+    await selectDate(page, 7);
 
-    await page.getByRole('button', { name: 'D1 Free' }).click();
-    await expect(page.getByRole('heading', { name: 'Reserve desk' })).toBeVisible();
+    await page.getByRole('button', { name: /^D1 free$/i }).click();
+    await expect(page.getByRole('dialog').getByText('Reserve desk')).toBeVisible();
     await page.getByRole('button', { name: 'Confirm' }).click();
 
-    await expect(page.getByRole('button', { name: /^D1\s+Mine/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^D1 yours$/i })).toBeVisible();
 
     // Clean up
-    await page.getByRole('button', { name: /^D1\s+Mine/ }).click();
+    await page.getByRole('button', { name: /^D1 yours$/i }).click();
     await page.getByRole('button', { name: 'Cancel reservation' }).click();
   });
 
   test('reserved desk appears in My reservations', async ({ page }) => {
-    const targetDate = offsetDate(8);
-    const input = page.locator('input[type="date"]');
-    await input.fill(targetDate);
-    await input.dispatchEvent('change');
+    await selectDate(page, 8);
 
-    await page.getByRole('button', { name: 'D2 Free' }).click();
+    await page.getByRole('button', { name: /D2.*free/i }).click();
     await page.getByRole('button', { name: 'Confirm' }).click();
 
-    await expect(page.getByRole('heading', { name: 'My reservations' })).toBeVisible();
-    await expect(page.locator('section').filter({ hasText: 'My reservations' }).getByText('D2')).toBeVisible();
+    await expect(page.getByText('My reservations')).toBeVisible();
+    await expect(page.locator('li').filter({ hasText: 'D2' })).toBeVisible();
 
     // Clean up
-    await page.getByRole('button', { name: /^D2\s+Mine/ }).click();
+    await page.getByRole('button', { name: /D2.*yours/i }).click();
     await page.getByRole('button', { name: 'Cancel reservation' }).click();
   });
 
-  test('cancels a reservation and desk returns to Free', async ({ page }) => {
-    const targetDate = offsetDate(9);
-    const input = page.locator('input[type="date"]');
-    await input.fill(targetDate);
-    await input.dispatchEvent('change');
+  test('cancels a reservation and desk returns to free', async ({ page }) => {
+    await selectDate(page, 9);
 
     // Reserve
-    await page.getByRole('button', { name: 'D3 Free' }).click();
+    await page.getByRole('button', { name: /D3.*free/i }).click();
     await page.getByRole('button', { name: 'Confirm' }).click();
-    await expect(page.getByRole('button', { name: /^D3\s+Mine/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /D3.*yours/i })).toBeVisible();
 
     // Cancel
-    await page.getByRole('button', { name: /^D3\s+Mine/ }).click();
-    await expect(page.getByRole('heading', { name: 'Cancel reservation' })).toBeVisible();
+    await page.getByRole('button', { name: /D3.*yours/i }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
     await page.getByRole('button', { name: 'Cancel reservation' }).click();
 
-    await expect(page.getByRole('button', { name: 'D3 Free' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /D3.*free/i })).toBeVisible();
   });
 
   test('dismisses the reservation modal when clicking Cancel', async ({ page }) => {
-    await page.getByRole('button', { name: 'D4 Free' }).click();
-    await expect(page.getByRole('heading', { name: 'Reserve desk' })).toBeVisible();
+    await page.getByRole('button', { name: /D4.*free/i }).click();
+    await expect(page.getByRole('dialog').getByText('Reserve desk')).toBeVisible();
 
-    // Scope to the modal overlay to avoid matching Cancel buttons in My reservations
-    await page.locator('.fixed.inset-0').getByRole('button', { name: 'Cancel' }).click();
-    await expect(page.getByRole('heading', { name: 'Reserve desk' })).not.toBeVisible();
+    await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click();
+    await expect(page.getByRole('dialog')).not.toBeVisible();
   });
 });
