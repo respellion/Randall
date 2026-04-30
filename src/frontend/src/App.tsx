@@ -40,7 +40,7 @@ export default function App() {
       <Route path="/" element={<PlannerPage auth={auth} onLogout={handleLogout} />} />
       <Route
         path="/admin"
-        element={auth.isAdmin ? <AdminPage /> : <Navigate to="/" replace />}
+        element={auth.isAdmin ? <AdminPage auth={auth} onLogout={handleLogout} /> : <Navigate to="/" replace />}
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

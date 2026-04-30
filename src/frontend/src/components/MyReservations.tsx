@@ -5,6 +5,11 @@ interface MyReservationsProps {
   onCancel: (reservation: Reservation) => void;
 }
 
+const PURPLE = '#5b4fc7';
+const PURPLE_DEEP = '#3f33a8';
+const SAGE = '#c7d4b8';
+const SAGE_DEEP = '#a9bb96';
+
 export function MyReservations({ reservations, onCancel }: MyReservationsProps) {
   const upcoming = reservations
     .filter((r) => r.status === 'Active')
@@ -12,24 +17,46 @@ export function MyReservations({ reservations, onCancel }: MyReservationsProps) 
 
   if (upcoming.length === 0) {
     return (
-      <p className="text-sm text-slate-400 text-center py-4">No upcoming reservations.</p>
+      <p style={{ fontSize: 13, color: PURPLE, opacity: 0.4, textAlign: 'center', padding: '8px 0', margin: 0 }}>
+        No upcoming reservations.
+      </p>
     );
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
       {upcoming.map((r) => (
         <li
           key={r.id}
-          className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '10px 0',
+            borderBottom: '1px solid rgba(91,79,199,0.08)',
+          }}
         >
           <div>
-            <span className="font-medium text-slate-800">{r.workplaceName}</span>
-            <div className="text-xs text-slate-400 mt-0.5">{r.date}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: PURPLE, lineHeight: 1 }}>
+              {r.workplaceName}
+            </div>
+            <div style={{ fontSize: 11, color: PURPLE, opacity: 0.55, marginTop: 3 }}>
+              {r.date}
+            </div>
           </div>
           <button
             onClick={() => onCancel(r)}
-            className="text-xs text-red-500 hover:text-red-700 font-medium px-3 py-1 rounded-lg hover:bg-red-50 transition-colors"
+            style={{
+              padding: '5px 12px',
+              borderRadius: 99,
+              background: SAGE,
+              border: `1px solid ${SAGE_DEEP}`,
+              color: PURPLE_DEEP,
+              fontSize: 11,
+              fontWeight: 500,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
           >
             Cancel
           </button>

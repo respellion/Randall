@@ -7,6 +7,12 @@ interface CancelModalProps {
   onClose: () => void;
 }
 
+const PURPLE = '#5b4fc7';
+const PURPLE_DEEP = '#3f33a8';
+const SAGE = '#c7d4b8';
+const SAGE_DEEP = '#a9bb96';
+const PAPER = '#f4f3ee';
+
 export function CancelModal({ deskName, date, onConfirm, onClose }: CancelModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -24,30 +30,77 @@ export function CancelModal({ deskName, date, onConfirm, onClose }: CancelModalP
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={onClose}>
+    <div
+      style={{
+        position: 'fixed', inset: 0,
+        background: 'rgba(42,31,107,0.35)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        zIndex: 50,
+      }}
+      onClick={onClose}
+    >
       <div
-        className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md mx-4"
+        role="dialog"
+        aria-modal="true"
+        style={{
+          background: PAPER, borderRadius: 18, padding: 32,
+          width: '100%', maxWidth: 380, margin: '0 16px',
+          border: '1px solid rgba(91,79,199,0.12)',
+          boxShadow: '0 20px 60px -12px rgba(42,31,107,0.25)',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-xl font-semibold text-slate-800 mb-1">Cancel reservation</h2>
-        <p className="text-sm text-slate-500 mb-6">
-          Cancel your booking for <span className="font-medium text-slate-700">{deskName}</span> on{' '}
-          <span className="font-medium text-slate-700">{date}</span>?
-        </p>
+        <div style={{
+          fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase',
+          color: PURPLE, opacity: 0.7, marginBottom: 8, fontWeight: 500,
+        }}>
+          Cancel reservation
+        </div>
+        <div style={{
+          fontFamily: "'Rubik Mono One', monospace",
+          fontSize: 36, letterSpacing: '-0.03em', color: PURPLE,
+          lineHeight: 0.95, marginBottom: 6,
+        }}>
+          {deskName}
+        </div>
+        <div style={{ fontSize: 13, color: PURPLE, opacity: 0.65, marginBottom: 24 }}>
+          {date}
+        </div>
 
-        {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg mb-4">{error}</p>}
+        {error && (
+          <div style={{
+            fontSize: 13, color: '#c0392b',
+            background: 'rgba(192,57,43,0.08)',
+            borderRadius: 8, padding: '10px 14px',
+            marginBottom: 18,
+          }}>
+            {error}
+          </div>
+        )}
 
-        <div className="flex gap-3">
+        <div style={{ display: 'flex', gap: 10 }}>
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+            style={{
+              flex: 1, padding: '11px 16px', borderRadius: 99,
+              background: SAGE, border: `1px solid ${SAGE_DEEP}`,
+              color: PURPLE_DEEP, fontSize: 13, fontWeight: 500,
+              cursor: 'pointer', fontFamily: 'inherit',
+            }}
           >
             Keep it
           </button>
           <button
             onClick={handleConfirm}
             disabled={loading}
-            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 disabled:opacity-50 transition-colors"
+            style={{
+              flex: 1, padding: '11px 16px', borderRadius: 99,
+              background: PURPLE_DEEP, border: `1.5px solid rgba(42,31,107,0.8)`,
+              color: '#fff', fontSize: 13, fontWeight: 500,
+              cursor: loading ? 'default' : 'pointer',
+              fontFamily: 'inherit',
+              opacity: loading ? 0.6 : 1,
+            }}
           >
             {loading ? 'Cancelling…' : 'Cancel reservation'}
           </button>
