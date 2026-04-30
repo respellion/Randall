@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
-import type { AdminUser, AuthResponse } from '../api/types';
+import type { AdminUser } from '../api/types';
 
 const PURPLE = '#5b4fc7';
 const PURPLE_DEEP = '#3f33a8';
@@ -10,7 +10,6 @@ const SAGE_DEEP = '#a9bb96';
 const PAPER = '#f4f3ee';
 
 interface AdminPageProps {
-  auth: AuthResponse;
   onLogout: () => void;
 }
 
@@ -18,7 +17,7 @@ function monogram(name: string): string {
   return name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
 }
 
-export function AdminPage({ auth, onLogout }: AdminPageProps) {
+export function AdminPage({ onLogout }: AdminPageProps) {
   const navigate = useNavigate();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);

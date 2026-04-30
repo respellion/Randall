@@ -84,7 +84,6 @@ export function PlannerPage({ auth, onLogout }: PlannerPageProps) {
 
   const today = toIsoDate(new Date());
   const MAX_OFFSET = 13;
-  const maxDate = offsetDate(today, MAX_OFFSET);
 
   const [selectedDate, setSelectedDate] = useState(today);
   const [schedule, setSchedule] = useState<WorkplaceScheduleItem[]>([]);
